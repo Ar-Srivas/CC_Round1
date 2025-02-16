@@ -17,12 +17,23 @@ class RoadmapResponse(BaseModel):
     roadmap: dict
 
 def generate_roadmap(startup_name: str, timeline: int) -> str:
-    prompt = f"Generate a {timeline}-month startup roadmap for {startup_name}. Include key milestones."
+    prompt = f"""Generate a structured {timeline}-month startup roadmap for solo founders.  
+        Output only the following format, with no title or extra text:  
+        Month 1: [Step]  
+        Month 2: [Step]  
+        ...until Month {timeline}  
+
+        Make each step clear, actionable, and concise.  
+        Use only plain text without special characters or formatting.  
+        Start directly with Month 1, no headers or titles.  
+        Do not include any additional information or notes and stick to one line for each month.  
+        Ensure that the output does not contain any bold text or special formatting.  
+        """
+    
     response = genai.GenerativeModel("gemini-pro").generate_content(prompt)
-    return response.text
+    return response.text.strip()
 
 def load_roadmaps():
-    """Load all roadmaps from JSON file"""
     if not os.path.exists(DB_FILE):
         with open(DB_FILE, "w") as file:
             json.dump([], file)
@@ -30,12 +41,10 @@ def load_roadmaps():
         return json.load(file)
 
 def save_roadmaps(roadmaps):
-    """Save roadmaps to JSON file"""
     with open(DB_FILE, "w") as file:
         json.dump(roadmaps, file, indent=4)
 
 def add_roadmap(user_id: int, startup_name: str, timeline: int) -> RoadmapResponse:
-    """Add a new roadmap entry"""
     roadmap_text = generate_roadmap(startup_name, timeline)
     roadmaps = load_roadmaps()
     new_roadmap = {

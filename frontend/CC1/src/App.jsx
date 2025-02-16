@@ -2,6 +2,7 @@ import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import RoadmapModal from "./components/Modal";
+import Card from "./components/Card";
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -97,6 +98,38 @@ function App() {
           </button>
         </div>
 
+        <div className="cards-container">
+          {analysis && (
+            <Card title="Analysis Results">
+              <div>
+                <h3>Gemini Analysis</h3>
+                <pre>{analysis.gemini_analysis}</pre>
+                <button onClick={() => setShowSuggestions(!showSuggestions)}>
+                  {showSuggestions ? 'Hide' : 'Show'} Suggestions
+                </button>
+                {showSuggestions && analysis.ml_prediction && (
+                  <div>
+                    <h3>ML Predictions</h3>
+                    <p>Acceptance Probability: {(analysis.ml_prediction.probability * 100).toFixed(2)}%</p>
+                    <h4>Suggestions:</h4>
+                    <ul>
+                      {analysis.ml_prediction.suggestions.map((suggestion, index) => (
+                        <li key={index}>{suggestion}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {roadmapData && (
+            <Card title={`${roadmapData.startup_name} - ${roadmapData.timeline} Month Roadmap`}>
+              <pre>{roadmapData.roadmap_text}</pre>
+            </Card>
+          )}
+        </div>
+
         <RoadmapModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
@@ -104,41 +137,6 @@ function App() {
         />
 
         {error && <div className="error">{error}</div>}
-
-        {roadmapData && (
-          <div className="roadmap-display">
-            <h3>{roadmapData.startup_name} - {roadmapData.timeline} Month Roadmap</h3>
-            <pre>{roadmapData.roadmap_text}</pre>
-          </div>
-        )}
-
-        {analysis && (
-          <div>
-            <h2>Analysis Output</h2>
-            <div>
-              <h3>Gemini Analysis</h3>
-              <pre>{analysis.gemini_analysis}</pre>
-            </div>
-            
-            <h2>Development Roadmap</h2>
-            <button onClick={() => setShowSuggestions(!showSuggestions)}>
-              {showSuggestions ? 'Hide' : 'Show'} Suggestions
-            </button>
-            
-            {showSuggestions && analysis.ml_prediction && (
-              <div>
-                <h3>ML Predictions</h3>
-                <p>Acceptance Probability: {(analysis.ml_prediction.probability * 100).toFixed(2)}%</p>
-                <h4>Suggestions:</h4>
-                <ul>
-                  {analysis.ml_prediction.suggestions.map((suggestion, index) => (
-                    <li key={index}>{suggestion}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
       </main>
       <Footer />
     </div>

@@ -80,10 +80,15 @@ class RoadmapRequest(BaseModel):
 @router.post("/create", response_model=RoadmapResponse)
 async def create_roadmap(request: RoadmapRequest):
     try:
+        # Generate roadmap text first
+        roadmap_text = generate_roadmap(request.startup_name, request.timeline)
+        
+        # Then call add_roadmap with all required parameters
         return add_roadmap(
             user_id=request.user_id,
             startup_name=request.startup_name,
-            timeline=request.timeline
+            timeline=request.timeline,
+            roadmap_text=roadmap_text
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

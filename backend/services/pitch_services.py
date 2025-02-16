@@ -205,7 +205,7 @@ class PitchDeckAnalyzer:
             }
 
     def analyze_pdf(self, pdf_path):
-        """Complete analysis of a PDF pitch deck."""
+
         try:
             if not os.path.exists(pdf_path):
                 raise FileNotFoundError(f"PDF file not found: {pdf_path}")
